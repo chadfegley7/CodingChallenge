@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Coding Challenge</title>
+
+    <style>
+      #schedule{
+        width: 620px;
+        height: 720px;
+        border: 1px solid grey;
+        background-color: lightgrey;
+        position: absolute;
+      }
+      #timeTable{
+        list-style-type: none;
+        text-align: right;
+      }
+      #timeTable li{
+        margin-bottom: 12px;
+        display: block;
+        margin-left: 300px;
+        position: relative;
+        bottom: 25px;
+      }
+      #scheduledEvent{
+        border-left: 2px solid green;
+        margin-left: 10px;
+      }
+      .container{
+        display: inline-block;
+      }
+
+
+    </style>
+  </head>
+  <body>
+    <div class="container" id="times">
+      <ul id="timeTable">
+        <li><b>9:00am</b></li>
+        <li>9:30</li>
+        <li><b>10:00am</b></li>
+        <li>10:30</li>
+        <li><b>11:00am</b></li>
+        <li>11:30</li>
+        <li><b>12:00pm</b></li>
+        <li>12:30</li>
+        <li><b>1:00pm</b></li>
+        <li>1:30</li>
+        <li><b>2:00pm</b></li>
+        <li>2:30</li>
+        <li><b>3:00pm</b></li>
+        <li>3:30</li>
+        <li><b>4:00pm</b></li>
+        <li>4:30</li>
+        <li><b>5:00pm</b></li>
+        <li>5:30</li>
+        <li><b>6:00pm</b></li>
+        <li>6:30</li>
+        <li><b>7:00pm</b></li>
+        <li>7:30</li>
+        <li><b>8:00pm</b></li>
+        <li>8:30</li>
+        <li><b>9:00pm</b></li>
+      </ul>
+    </div>
+    <div class="container" id="schedule">
+      <div class="table-responsive" id="eventsTable">
+
+      </div>
+    </div>
+    <script type="text/javascript">
+
+      var layOutDay = function(events){
+
+        var numOfEvents = events.length;
+
+        var timeslots = [];
+
+        var i;
+
+        var j;
+
+        var k;
+
+        var m;
+
+        var activity;
+
+        var activities = events
+
+        var event;
+
+        //So I want to initiate a for loop to create all possible timeslots on the schedule
+        //using the length of the schedule, 720, as the end point. At the end of the for loop
+        //I am going to have 720 empty arrays that are timeslots.
+
+        for(i = 0; i < 720; i++){
+
+          timeslots[i] = [];
+
+        }
+
+        //The next step is to have a for loop that will loop as many number as there are events.
+        //We want to set the variable activity equal to what "i" is currently on.
+
+        for(i = 0; i < numOfEvents; i++){
+
+          activity = activities[i];
+
+          //Next step, I want to have another for loop that is going to start where the activity is supposed
+          //to start, and will end where the activity ends in the timeslots. Example: the first event will
+          //start at timeslots[30] and push that activity into all timeslots up to timeslots[150].
+
+          for(j = activity.start; j < activity.end; j++){
+
+            timeslots[j].push(activity);
+
+          };
+        }
+
+        //After I have completed the for loops, I want to start another one that's going to go back through
+        //the timeslots array so we can see which timeslots have activities in them.
+
+        for(i = 0; i < timeslots.length; i++){
+
+          var moveIndex = 0;
+
+          activity = timeslots[i];
+
+          //If the timeslots array is greater than 0, we know that there's an activity scheduled there.
+
+          if(activity.length > 0){
+
+            //Next I want to loop through the activity length so I can see if there is just one scheduled event in the timeslots
+            //or multiple.
+
+            for(k = 0; k < activity.length; k++){
+
+              event = activity[k];
+
+              //Since there's no set property of sharing in the object, I want to set it to the timeslot length. We are going to use this
+              //property later in setting the width of the divs
+
+              if(!event.sharing || event.sharing < activity.length){
+
+                event.sharing = timeslots[i].length;
+
+              }
+
+              //If there's no horizontalIndex, I want to set it to the variable moveIndex. This is going to move the divs properly in place
+              //if there's multiple activities sharing timeslots.
+
+              if(!event.horizontalIndex){
+
+                event.horizontalIndex = moveIndex;
+
+                moveIndex++;
+
+              }
+            }
+          }
+        }
+
+      //Another for loop! This time we want to loop through all the activities again so that we can set all the important
+      //properties of the divs with the information we've added to the objects from previous loops.
+
+      for(m = 0; m < activities.length; m++){
+
+        activity = activities[m];
+
+        activity.height = activity.end - activity.start;
+
+        activity.startPoint = activity.start;
+
+        activity.width = 600 / activity.sharing;
+
+        activity.xIndex = activity.width * activity.sharing;
+
+        var eventContainer = document.createElement("div");
+
+        eventContainer.id = "scheduledEvent";
+
+        eventContainer.style.height = activity.height + "px";
+
+        eventContainer.style.width = activity.width + "px";
+
+        eventContainer.style.top = activity.start + "px";
+
+        eventContainer.style.left = activity.horizontalIndex * activity.width + "px";
+
+        eventContainer.style.position = "absolute";
+
+        eventContainer.style.background = "white";
+
+        document.getElementById("eventsTable").appendChild(eventContainer);
+
+        console.log(activity);
+
+      }
+    };
+
+    var events = [{start: 30, end: 150}, {start: 540, end: 600}, {start: 560, end: 620}, {start: 610, end: 670}];
+
+    layOutDay(events);
+
+    </script>
+  </body>
+</html>
